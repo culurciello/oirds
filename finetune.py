@@ -13,13 +13,11 @@ from torch.autograd import Variable
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import time
 import copy
 import os
 from tqdm import tqdm, trange
-
-plt.ion()   # interactive mode
 
    
 
@@ -110,6 +108,8 @@ def train_model(model, criterion, optimizer, num_epochs=25):
 
 # MAIN:
 
+# plt.ion()   # interactive mode
+
 # params:
 batch_size = 128
 threads = 8
@@ -147,8 +147,8 @@ use_gpu = torch.cuda.is_available()
 inputs, classes = next(iter(dset_loaders['train']))
 
 # Make a grid from batch
-out = torchvision.utils.make_grid(inputs)
-imshow(out, title=[dset_classes[x] for x in classes])
+# out = torchvision.utils.make_grid(inputs)
+# imshow(out, title=[dset_classes[x] for x in classes])
 
 
 print('Load pre-trained model, resnet18')
@@ -168,6 +168,5 @@ optimizer_ft = optim.Adam( model_ft.parameters() )
 print('Training model:')
 model_ft = train_model(model_ft, criterion, optimizer_ft, num_epochs=25)
 
-
-
-
+# save best model:
+torch.save(model_ft.state_dict(), args.save + "/model.pt")
