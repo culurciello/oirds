@@ -61,38 +61,40 @@ dset_loaders = {x: torch.utils.data.DataLoader(dsets[x], batch_size=batch_size,
 dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
 dset_classes = dsets['train'].classes
 
-# Get a batch of training data
-inputs, classes = next(iter(dset_loaders['val']))
+# loop many examples:
+while True:
+    # Get a batch of training data
+    inputs, classes = next(iter(dset_loaders['val']))
 
-# Make a grid from batch
-out = torchvision.utils.make_grid(inputs)
-fig = imshow(out)
+    # Make a grid from batch
+    out = torchvision.utils.make_grid(inputs)
+    fig = imshow(out)
 
-#load model
-model = torch.load("modelDef.pth") #models.resnet18()
-model.load_state_dict(torch.load("finemodel.pth"))
-model.cpu()
-model.eval()
-# wrap them in Variable
-inputs = Variable(inputs)
+    #load model
+    model = torch.load("modelDef.pth") #models.resnet18()
+    model.load_state_dict(torch.load("finemodel.pth"))
+    model.cpu()
+    model.eval()
+    # wrap them in Variable
+    inputs = Variable(inputs)
 
-# forward
-outputs = model(inputs)
-_, preds = torch.max(outputs.data, 1)
+    # forward
+    outputs = model(inputs)
+    _, preds = torch.max(outputs.data, 1)
 
-txt=''
-for i in range(len(preds)):
-    if i%8==0: 
-        txt = txt+'\n'
-    if preds[i][0]==0:
-        txt = txt+'car, '
-    else:
-        txt = txt+'---, '
+    txt=''
+    for i in range(len(preds)):
+        if i%8==0: 
+            txt = txt+'\n'
+        if preds[i][0]==0:
+            txt = txt+'car, '
+        else:
+            txt = txt+'---, '
 
-print(txt)
-fig.suptitle(txt, fontsize=15)
-plt.show()
-input()
+    print(txt)
+    fig.suptitle(txt, fontsize=15)
+    plt.show()
+    input()
 
 
 
