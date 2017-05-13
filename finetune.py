@@ -28,6 +28,7 @@ def imshow(inp, title=None):
     std = np.array([0.229, 0.224, 0.225])
     inp = std * inp + mean
     plt.imshow(inp)
+    plt.axis('off')
     if title is not None:
         plt.title(title)
     plt.pause(0.001)  # pause a bit so that plots are updated
