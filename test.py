@@ -25,6 +25,7 @@ def imshow(inp, title=None):
     plt.imshow(inp)
     if title is not None:
         plt.title(title)
+    plt.axis('off')
     plt.pause(0.001)  # pause a bit so that plots are updated
 
     return plt
@@ -65,7 +66,7 @@ inputs, classes = next(iter(dset_loaders['val']))
 
 # Make a grid from batch
 out = torchvision.utils.make_grid(inputs)
-fig = imshow(out, title=[dset_classes[x] for x in classes])
+fig = imshow(out)
 
 #load model
 model = torch.load("modelDef.pth") #models.resnet18()
@@ -84,12 +85,12 @@ for i in range(len(preds)):
     if i%8==0: 
         txt = txt+'\n'
     if preds[i][0]==0:
-        txt = txt+'car\t'
+        txt = txt+'car, '
     else:
-        txt = txt+'---\t'
+        txt = txt+'---, '
 
 print(txt)
-fig.text(2, 15, txt, fontsize=10)
+fig.suptitle(txt, fontsize=15)
 plt.show()
 input()
 
