@@ -11,6 +11,7 @@ import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
 import matplotlib.pyplot as plt
+import os
 
 plt.ion()   # interactive mode 
 
@@ -26,9 +27,11 @@ def imshow(inp, title=None):
         plt.title(title)
     plt.pause(0.001)  # pause a bit so that plots are updated
 
+    return plt
+
 
 # params:
-batch_size = 128
+batch_size = 16
 threads = 8
 
 # Data augmentation and normalization for training
@@ -57,30 +60,39 @@ dset_loaders = {x: torch.utils.data.DataLoader(dsets[x], batch_size=batch_size,
 dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
 dset_classes = dsets['train'].classes
 
-use_gpu = torch.cuda.is_available()
-
-
 # Get a batch of training data
 inputs, classes = next(iter(dset_loaders['val']))
 
 # Make a grid from batch
 out = torchvision.utils.make_grid(inputs)
-imshow(out, title=[dset_classes[x] for x in classes])
+fig = imshow(out, title=[dset_classes[x] for x in classes])
 
 #load model
 model = torch.load("modelDef.pth") #models.resnet18()
 model.load_state_dict(torch.load("finemodel.pth"))
+model.cpu()
 model.eval()
 # wrap them in Variable
-if use_gpu:
-    inputs = Variable(inputs.cuda())
-
+inputs = Variable(inputs)
 
 # forward
 outputs = model(inputs)
 _, preds = torch.max(outputs.data, 1)
 
-print(preds)
+txt=''
+for i in range(len(preds)):
+    if i%8==0: 
+        txt = txt+'\n'
+    if preds[i][0]==0:
+        txt = txt+'car\t'
+    else:
+        txt = txt+'---\t'
+
+print(txt)
+fig.text(2, 15, txt, fontsize=10)
+plt.show()
+input()
+
 
 
 
