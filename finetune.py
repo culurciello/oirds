@@ -169,4 +169,5 @@ print('Training model:')
 model_ft = train_model(model_ft, criterion, optimizer_ft, num_epochs=25)
 
 # save best model:
-torch.save(model_ft.state_dict(), "finemodel.pt")
+torch.save(model_ft, "/modelDef.pth")
+torch.save(model_ft.state_dict(), "finemodel.pth")
