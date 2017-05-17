@@ -11,9 +11,11 @@ import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
 import matplotlib.pyplot as plt
-import os
+import os, sys
 
 plt.ion()   # interactive mode 
+
+print('Usage: python3 test.py modelDef.pth finemodel.pth')
 
 
 def imshow(inp, title=None):
@@ -71,8 +73,8 @@ while True:
     fig = imshow(out)
 
     #load model
-    model = torch.load("modelDef.pth") #models.resnet18()
-    model.load_state_dict(torch.load("finemodel.pth"))
+    model = torch.load(sys.argv[1])
+    model.load_state_dict(torch.load(sys.argv[2]))
     model.cpu()
     model.eval()
     # wrap them in Variable
