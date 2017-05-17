@@ -16,9 +16,11 @@ from torchvision import datasets, models, transforms
 # import matplotlib.pyplot as plt
 import time
 import copy
-import os
+import os, sys
 from tqdm import tqdm, trange
 
+
+print('Usage: python3 finetune.py resnet18/alexnet')
    
 
 def imshow(inp, title=None):
@@ -151,24 +153,43 @@ inputs, classes = next(iter(dset_loaders['train']))
 # out = torchvision.utils.make_grid(inputs)
 # imshow(out, title=[dset_classes[x] for x in classes])
 
+if sys.argv[1] == 'resnet18':
+    print('Load pre-trained model, resnet18')
+    model_ft = models.resnet18(pretrained=True)
+    num_ftrs = model_ft.fc.in_features
+    model_ft.fc = nn.Linear(num_ftrs, 2)
+    print(model_ft)
+    optimizer_ft = optim.Adam( model_ft.parameters() ) # used for ResNet18
+    file_modeldef = "modelDef-resnet18.pth"
+    file_model = "finemodel-resnet18.pth"
+elif sys.argv[1] == 'alexnet':
+    print('Load pre-trained model, alexnet')
+    model_ft = models.alexnet(pretrained=True)
+    # print(list(list(model_ft.classifier.children())[1].parameters()))
+    mod = list(model_ft.classifier.children())
+    mod.pop()
+    mod.append(torch.nn.Linear(4096, 2))
+    new_classifier = torch.nn.Sequential(*mod)
+    # print(list(list(new_classifier.children())[1].parameters()))
+    model_ft.classifier = new_classifier
+    print(model_ft)
+    optimizer_ft = optim.SGD(model_ft.parameters(), lr = 0.01, momentum=0.9)
+    file_modeldef = "modelDef-alexnet.pth"
+    file_model = "finemodel-alexnet.pth"
+else:
+    print('Model not supported!')
+    sys.exit(0)
 
-print('Load pre-trained model, resnet18')
-model_ft = models.resnet18(pretrained=True)
-num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, 2)
-
+# continue:
 print('use GPU is needed')
 if use_gpu:
     model_ft = model_ft.cuda()
 
 criterion = nn.CrossEntropyLoss()
 
-# Observe that all parameters are being optimized
-optimizer_ft = optim.Adam( model_ft.parameters() )
-
 print('Training model:')
 model_ft = train_model(model_ft, criterion, optimizer_ft, num_epochs=25)
 
 # save best model:
-torch.save(model_ft, "modelDef.pth")
-torch.save(model_ft.state_dict(), "finemodel.pth")
+torch.save(model_ft, file_modeldef)
+torch.save(model_ft.state_dict(), file_model)
